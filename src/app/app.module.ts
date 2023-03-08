@@ -16,9 +16,8 @@ import { FooterComponent } from './components/footer/footer.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent  } from './components/sing-up/sign-up.component';
 
-import { MatSnackBarModule,} from '@angular/material/snack-bar';
+import { MatSnackBarModule} from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 
 registerLocaleData(localePt, 'pt');
 
@@ -32,9 +31,6 @@ registerLocaleData(localePt, 'pt');
     FooterComponent,
     LoginComponent,
     SignupComponent,
-    
-    
-  
   ],
   imports: [
     BrowserAnimationsModule,
@@ -44,11 +40,7 @@ registerLocaleData(localePt, 'pt');
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
-   
-    
     MatSnackBarModule,
-
-
   ],
  
   providers: [

@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import { interfaceApiService } from '../models/InterfaceApiService';
 import { Observable, take } from 'rxjs';
 import { FormComponent} from 'src/app/components/form/form.component';
@@ -12,27 +12,38 @@ interface Response { results: interfaceApiService[] }
   providedIn: 'root'
 })
 
+
 export class ApiServiceService {
    ngModel =  new EventEmitter<interfaceApiService>();
    static arquivo =  new EventEmitter<interfaceApiService>();
- 
+   //private const URL =  "https://ojviia7zik.execute-api.us-east-1.amazonaws.com/Prod/"
   
 
   constructor(private httpCliente: HttpClient, private router: Router) { }
 
-
-
-  Buscar(): Observable<any>{
-
-    return this.httpCliente.get<any>("/api/arquivo/");
+// CRUD API
+  AuthenticateToken(url: any){
+    let headers = new HttpHeaders()
+    .append('token', url);
+    return this.httpCliente.get("/api/authenticatetoken/",{ headers: headers }).toPromise().catch((err: HttpErrorResponse) => {
+      // simple logging, but you can do a lot more, see below
+      console.log("error")
+      console.error('An error occurred:', err.error);
+      return "undefined"
+    });
 
   }
 
+  Buscar(url: any): Observable<any>{
+    console.log(url)
+    let headers = new HttpHeaders()
+    .append('token', url);
+    return this.httpCliente.get<any>("/api/arquivo/",{ headers: headers });
+  }
 
   BuscarPorId(id: any ){
 
   return this.httpCliente.get<any>(`/api/arquivo/${id}`);
-   
    
   }
 
@@ -49,7 +60,7 @@ export class ApiServiceService {
     return this.httpCliente.delete(`/api/delete/${id}`).toPromise()
   }
 
-//*************autenticação cognito**** */
+// Autenticação com o Cognito
 
 Criar(arquivo: User){
   
@@ -62,6 +73,7 @@ confirmar(arquivo: User){
   return this.httpCliente.post<User>(`/api/authenticationconfirm`,arquivo).toPromise();
   
 }
+
 
 login(arquivo: User){
   console.log("logando")
@@ -78,6 +90,5 @@ forgotConfirmPassword(arquivo: User){
   return this.httpCliente.post<User>(`/api/authenticationconfirmpassword`,arquivo).toPromise();
   
 }
-
 
 }

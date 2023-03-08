@@ -4,8 +4,8 @@ import { ApiServiceService } from 'src/app/services/api-service.service';
 import { ActivatedRoute, Router,ParamMap } from '@angular/router';
 import { FormBuilder, FormGroup, MaxLengthValidator, Validators } from '@angular/forms';
 
-import { CognitoService } from 'src/app/services/cognito.service';
-import { User } from 'src/app/models/user';
+//import { CognitoService } from 'src/app/services/cognito.service';
+
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
@@ -22,18 +22,17 @@ export class FormComponent implements OnInit{
   form!: FormGroup;
   submited =  false
 
-
   constructor(private api: ApiServiceService,  private router: Router,
-               private fb: FormBuilder, private route: ActivatedRoute, private cognito: CognitoService,private snackBar: MatSnackBar){ }
+               private fb: FormBuilder, private route: ActivatedRoute,
+                //private cognito: CognitoService,
+                private snackBar: MatSnackBar){ }
  
   ngOnInit(): void{
 
-    this.getUser()
+    this.getUser();
     this.route.params.subscribe(
       ((params : any) =>{
           const id = params['id']
-          
-          
           if(id != undefined){
             this.att =false
             this.api.BuscarPorId(id).subscribe(res =>{
@@ -60,23 +59,19 @@ export class FormComponent implements OnInit{
   }
 
   private getUser(){
-    const user = localStorage.getItem("token")
-      if(user == null){
+    const user = this.api.AuthenticateToken(localStorage.getItem("token"));
+    user.then(res=> {
+      console.log(res)
+      if(res ==  "undefined"){
         this.router.navigate(['/login']);
       }
-  
+    })
   }
 
   signOut(){
     localStorage.removeItem("token")
     this.router.navigate(['/login']);
   }
-  // signOut(){
-  //   this.cognito.signOut()
-  //   .then(()=>{
-  //     this.router.navigate(['/login']);
-  //   })
-  // }
 
   Editar(arquivo: any){
     console.log("editar", arquivo)
@@ -94,7 +89,6 @@ export class FormComponent implements OnInit{
     })
   }
 
-
   hasError(field: string){
     return this.form.get(field)?.errors
     
@@ -110,7 +104,6 @@ export class FormComponent implements OnInit{
     }
   }
  
-
   Salvar(){
 
     if(this.form.valid){
@@ -130,7 +123,6 @@ export class FormComponent implements OnInit{
     }
   }
 
-
   Atualizar(){
     
     if(this.form.valid){
@@ -147,8 +139,6 @@ export class FormComponent implements OnInit{
       console.log("invalido")
     }
   }
-
-
 
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
